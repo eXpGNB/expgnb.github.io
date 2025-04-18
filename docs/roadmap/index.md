@@ -15,6 +15,6 @@ As the stages progress, students will build a working 5G testbed and develop the
 
 
 ## Stages
-* Stage 0: [Setup](/roadmap/stages/stage-0/)
+* Stage 0: [Setup](/roadmap/stages/stage-0)
 * Stage 1: [RF Simulator](/roadmap/stages/stage-1)
 * Stage 2: [Connecting the USRP](/roadmap/stages/stage-2)

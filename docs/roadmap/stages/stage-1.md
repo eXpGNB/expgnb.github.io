@@ -554,7 +554,7 @@ The output should contain the following device if the connection has been succes
 ### Establish an ethernet connection between the devices
 * Connect both the devices via an ethernet cable
 * Edit the network config to give IP addresses within the same subnet to both the devices
-<div style="display: flex; justify-content: space-between;">
+<div style="display: flex; justify-content: space-between; flex-wrap: wrap;">
 <div>
 
 ### gNodeB Configuration

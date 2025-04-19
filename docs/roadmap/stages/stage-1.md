@@ -549,6 +549,25 @@ The output should contain the following device if the connection has been succes
 # TODO add correct output
 ```
 
+* If you examine the docker compose file and look at the different components, you will notice a dummy container called `oai-ext-dn` which is used to simulate an external network with respect to the core network. This container has been given the ip `192.168.70.135`
+* We can now verify whether the UE is able to connect to the external network by trying to ping to this network
+```bash
+ping 192.168.70.135 -I oaitun_ue1
+```
+::: info NOTE
+* the `-I` flag in the ping command is used to specify the network interface via which to send the packets
+* in this case, we want to force the packets to be sent via the connection that was established by the core network and the UE, and not any of the existing LAN or WiFi networks that might already be present on the PC.
+* Thus this flag is important.
+::: 
+
+
+* Furthermore, you can also test out whether the external dn can communicate with the host as well
+* Using the following command you can send packets from the simulated external dn to the UE.
+```bash
+docker exec -it oai-ext-dn ping <UE IP Address>
+```
+
+
 ## Dedicated device for gNodeB and UE
 
 ### Establish an ethernet connection between the devices
@@ -627,3 +646,62 @@ Run the UE on the machine with IP `192.168.1.2`
 cd ~/openairinterface5g/cmake_targets/ran_build/build
 sudo -E ./nr-uesoftmodem -r 106 --numerology 1 --band 78 -C 3619200000 --rfsim --ssb 516 -O <path/to/ue.conf>
 ```
+
+## Milestone 2
+We can now verify whether the connection has been established between the 2 devices using the same method we have tried before
+
+Repeat the steps we have followed in [Milestone 1](#milestone-1) in the device being used as the UE, and ensure that the IP assignment is taking place and that the packets are being sent via the correct interface to the core network
+
+## Exercises
+### Iperf test
+* Iperf measures the **TCP or UDP** throughput and can help assess the **network speed, latency, jitter, and packet loss**
+* Iperf works using a client-server model where the client sends data to the server and reports the transfer speed, latency, etc
+* For this test, we shall use the `oai-ext-dn` (in Docker) as the server, and the UE itself as the client
+* To run `iperf3` server we run the following command in the PC containing the core network
+```bash
+docker exec -it oai-ext-dn bash
+iperf3 -s
+```
+* To run `iperf3` client we run the following command in the PC containing the UE
+```bash
+iperf3 -B <UE IP ADDRESS> -c 192.168.70.135 -u -b 50M -R    # DL
+iperf3 -B <UE IP ADDRESS> -c 192.168.70.135 -u -b 20M       # UL
+```
+
+
+### Adding a custom UE
+* Handling multiple clients, with varying policies, is one of the primary functions of a base station. Although in these stages, we shall primarily focus on establishing a connection between a singular gNodeB and a singular UE
+
+* To create a custom UE, we need to create a second config file (let's call it `ue2.conf`) of the following structure
+
+::: details ue2.conf
+```yaml
+...
+
+uicc0 = {
+  imsi = "001010000000002";
+  key = "fec86ba6eb707ed08905757b1bb44b8f";
+  opc= "C42449363BBAD02B66D16BC975D77CC1";
+  dnn= "oai";
+  nssai_sst=1;
+}
+
+...
+```
+:::
+
+* The core network consists of a database of subscribers. Thus by default, when this UE attempts to connect to the core network, it will be denied access.
+* To register this UE into the database, follow these steps:
+    * The core database is situted in `<path-to-conf-files>/database/oai_db.sql`
+    * We add the new `imsi`, `key` and `opc` to the `AuthenticationSubscription` table as follows:
+    ```bash
+    INSERT INTO `AuthenticationSubscription` (`ueid`, `authenticationMethod`, `encPermanentKey`, `protectionParameterId`, `sequenceNumber`, `authenticationManagementField`, `algorithmId`, `encOpcKey`, `encTopcKey`, `vectorGenerationInHss`, `n5gcAuthMethod`, `rgAuthenticationInd`, `supi`) VALUES
+        ('001010000000002', '5G_AKA', 'fec86ba6eb707ed08905757b1bb44b8f', 'fec86ba6eb707ed08905757b1bb44b8f', '{\"sqn\": \"000000000000\", \"sqnScheme\": \"NON_TIME_BASED\", \"lastIndexes\": {\"ausf\": 0}}', '8000', 'milenage', 'C42449363BBAD02B66D16BC975D77CC1', NULL, NULL, NULL, NULL, '001010000000002');
+    ```
+    * Add the `imsi`, `dnn` and `nssai_sst` information of the UE to the `SessionManagementSubscriptionData`
+    ```bash
+    INSERT INTO `SessionManagementSubscriptionData` (`ueid`, `servingPlmnid`, `singleNssai`, `dnnConfigurations`) VALUES
+    ('001010000000002', '00101', '{\"sst\": 1, \"sd\": \"FFFFFF\"}','{\"oai\":{\"pduSessionTypes\":{ \"defaultSessionType\": \"IPV4\"},\"sscModes\": {\"defaultSscMode\": \"SSC_MODE_1\"},\"5gQosProfile\": {\"5qi\": 6,\"arp\":{\"priorityLevel\": 15,\"preemptCap\": \"NOT_PREEMPT\",\"preemptVuln\":\"PREEMPTABLE\"},\"priorityLevel\":1},\"sessionAmbr\":{\"uplink\":\"1000Mbps\", \"downlink\":\"1000Mbps\"},\"staticIpAddress\":[{\"ipv4Addr\": \"10.0.0.3\"}]},\"ims\":{\"pduSessionTypes\":{ \"defaultSessionType\": \"IPV4V6\"},\"sscModes\": {\"defaultSscMode\": \"SSC_MODE_1\"},\"5gQosProfile\": {\"5qi\": 2,\"arp\":{\"priorityLevel\": 15,\"preemptCap\": \"NOT_PREEMPT\",\"preemptVuln\":\"PREEMPTABLE\"},\"priorityLevel\":1},\"sessionAmbr\":{\"uplink\":\"1000Mbps\", \"downlink\":\"1000Mbps\"}}}');
+    ```
+
+* Now restart the `5G Core` and use the new config `ue2.conf` while running the OAI UE

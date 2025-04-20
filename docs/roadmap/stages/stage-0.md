@@ -20,6 +20,15 @@ The current version has only been tested out on ubuntu 22.04, thus although poss
 - On top of that, versioning your progress can also help in debugging if anything goes wrong
 
 
+### Setup a working directory
+- For the ease of use, let us create a common working directory, where we shall keep the configuration and other relevant files to our project
+- make a folder within the home directory of the user as follows
+```bash
+cd ~
+mkdir expgnb
+```
+
+
 ### Openairinterface5g
 - OpenAirInterface5G (OAI) is an open-source software suite that implements key components of 4G and 5G mobile networks, including the core network (5GC), the base station (gNodeB), and user equipment (UE). 
 - It provides a fully customizable and extensible framework for research, prototyping, and deployment of cellular networks.
@@ -28,7 +37,10 @@ The current version has only been tested out on ubuntu 22.04, thus although poss
 
 ### Clone config files
 ```bash
+cd ~/expgnb
 git clone https://github.com/expgnb/expgnb.git conf-files
+cd conf-files
+rm -rf .git
 ```
 
 ### UHD Drivers

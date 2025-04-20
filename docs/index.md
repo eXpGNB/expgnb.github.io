@@ -4,8 +4,8 @@ layout: home
 
 hero:
   name: "eXpgNb"
-  text: "A documentation on how to set up a working gNodeB using openairinterface5g"
-  tagline: My great project tagline
+  text: "Setup a working 5g core-network"
+  tagline: A documentation on how to set up a working gNodeB using openairinterface5g
   actions:
     - theme: brand
       text: Roadmap
@@ -15,11 +15,11 @@ hero:
       link: /resources
 
 features:
-  - title: Feature A
-    details: Lorem ipsum dolor sit amet, consectetur adipiscing elit
-  - title: Feature B
-    details: Lorem ipsum dolor sit amet, consectetur adipiscing elit
-  - title: Feature C
-    details: Lorem ipsum dolor sit amet, consectetur adipiscing elit
+  - title: Core network
+    details: Provides essential 5G services such as authentication, mobility, and session management, using containerized VNFs like AMF, SMF, UPF, and NRF.
+  - title: USRP configuration
+    details: Configured to operate in Band 78 (3.6 GHz) for over-the-air 5G transmission and reception using NI USRP 2901 devices with OpenAirInterface.
+  - title: Open Source
+    details: Built using open-source components like OpenAirInterface for the RAN and 5G core, enabling customizable and cost-effective development.
 ---
 

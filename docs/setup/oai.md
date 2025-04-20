@@ -2,13 +2,14 @@
 
 Open a new terminal and clone the ran repository
 ```bash
+cd ~/expgnb
 git clone https://gitlab.eurecom.fr/oai/openairinterface5g.git
 ```
 
 ### RF Simulator setup
 compile the gNB and nrUE for rf simulator
 ```bash
-cd openairinterface5g/
+cd ~/expgnb/openairinterface5g/
 git checkout develop
 source oaienv
 cd cmake_targets/
@@ -20,7 +21,7 @@ cd cmake_targets/
 ### USRP Setup
 compile the gNB and nrUE for actual USRP setup (stage 2)
 ```bash
-cd openairinterface5g/
+cd ~/expgnbopenairinterface5g/
 git checkout develop
 source oaienv
 cd cmake_targets/

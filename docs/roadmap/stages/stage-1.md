@@ -14,8 +14,11 @@ By using the RF simulator, we can first validate the setup of the core network a
 ## Localhost setup
 Once the required dependencies are downloaded and setup on both devices, we shall attempt to setup both the gNodeB as wellas the user equipment on a single device first, before we move on to a multi-device setup
 
+::: info NOTE
+The following cli snippets have been provided, assuming that the configuration files are present in the same folder structure as suggested in the setup.
+:::
 ### Setup the core network
-::: details docker-compose.yaml
+::: details ~/expgnb/conf-files/core-network/docker-compose.yaml
 ```yaml
 services:
     mysql:
@@ -204,11 +207,13 @@ docker compose pull
 
 start the core network
 ```bash
+cd ~/expgnb/conf-files/core-network
 docker compose -f docker-compose.yaml up -d
 ```
 
 watch the status of the core network
 ```bash
+cd ~/expgnb/conf-files/core-network
 watch docker compose -f docker-compose.yaml ps -a
 ```
 
@@ -216,7 +221,7 @@ All the docker containers should be healthy
 
 
 ### Run the gNodeB
-::: details gnb.sa.band78.106prb.rfsim.conf (gNodeB config file)
+::: details ~/expgnb/conf/rfsim/gnb.sa.band78.106prb.rfsim.conf (gNodeB config file)
 ```yaml
 Active_gNBs = ( "gNB-OAI");
 # Asn1_verbosity, choice in: none, info, annoying
@@ -490,15 +495,15 @@ log_config = {
 
 
 
-Run the gNodeB
+Run the gNodeB on another terminal instance
 ```bash
-cd ~/openairinterface5g/cmake_targets/ran_build/build
-sudo -E ./nr-softmodem --rfsim -O <path/to/gnb.sa.band78.106prb.rfsim.conf>
+cd ~/expgnb/openairinterface5g/cmake_targets/ran_build/build
+sudo -E ./nr-softmodem --rfsim -O ~/expgnb/conf-files/conf/rfsim/gnb.sa.band78.106prb.rfsim.conf
 ```
 
 
 ### Run the UE
-::: details ue.conf (UE config file)
+::: details ~/expgnb/conf-files/conf/rfsim/ue-rfsim.local.conf (UE config file)
 ```yaml
 sa=1;
 rfsim=1;
@@ -529,10 +534,10 @@ rfsimulator :
 :::
 
 
-Run the UE
+Run the UE on another terminal instance
 ```bash
-cd ~/openairinterface5g/cmake_targets/ran_build/build
-sudo -E ./nr-uesoftmodem -r 106 --numerology 1 --band 78 -C 3619200000 --rfsim --ssb 516 -O <path/to/ue.conf>
+cd ~/expgnb/openairinterface5g/cmake_targets/ran_build/build
+sudo -E ./nr-uesoftmodem -r 106 --numerology 1 --band 78 -C 3619200000 --rfsim --ssb 516 -O ~/expgnb/conf-files/conf/rfsim/ue-rfsim.local.conf
 ```
 
 
@@ -546,7 +551,12 @@ ip a
 ```
 The output should contain the following device if the connection has been successfull
 ```bash
-# TODO add correct output
+...
+3: oaitun_ue1: <POINTOPOINT,NOARP,UP,LOWER_UP> mtu 1500 qdisc pfifo_fast state UP group default qlen 500
+    link/[??] 
+    inet 10.0.0.2/24 scope global oaitun_ue1
+       valid_lft forever preferred_lft forever
+...
 ```
 
 * If you examine the docker compose file and look at the different components, you will notice a dummy container called `oai-ext-dn` which is used to simulate an external network with respect to the core network. This container has been given the ip `192.168.70.135`
@@ -603,7 +613,7 @@ docker exec -it oai-ext-dn ping <UE IP Address>
 
 
 ### Config changes required
-::: details ue.conf (modified UE config file)
+::: details ~/expgnb/conf-files/conf/rfsim/ue-rfsim.eth.conf (modified UE config file)
 ```yaml
 sa=1;
 rfsim=1;
@@ -637,14 +647,14 @@ rfsimulator :
 
 Run the gNodeB on machine with IP `192.168.1.1`
 ```bash
-cd ~/openairinterface5g/cmake_targets/ran_build/build
-sudo -E ./nr-softmodem --rfsim -O <path/to/gnb.sa.band78.106prb.rfsim.conf>
+cd ~/expgnb/openairinterface5g/cmake_targets/ran_build/build
+sudo -E ./nr-softmodem --rfsim -O ~/expgnb/conf-files/rfsim/gnb.sa.band78.106prb.rfsim.conf
 ```
 
 Run the UE on the machine with IP `192.168.1.2`
 ```bash
-cd ~/openairinterface5g/cmake_targets/ran_build/build
-sudo -E ./nr-uesoftmodem -r 106 --numerology 1 --band 78 -C 3619200000 --rfsim --ssb 516 -O <path/to/ue.conf>
+cd ~/expgnb/openairinterface5g/cmake_targets/ran_build/build
+sudo -E ./nr-uesoftmodem -r 106 --numerology 1 --band 78 -C 3619200000 --rfsim --ssb 516 -O ~/expgnb/conf-files/rfsim/ue-rfsim.eth.conf
 ```
 
 ## Milestone 2
@@ -692,7 +702,7 @@ uicc0 = {
 
 * The core network consists of a database of subscribers. Thus by default, when this UE attempts to connect to the core network, it will be denied access.
 * To register this UE into the database, follow these steps:
-    * The core database is situted in `<path-to-conf-files>/database/oai_db.sql`
+    * The core database is situted in `~/expgnb/conf-files/core-network/database/oai_db.sql`
     * We add the new `imsi`, `key` and `opc` to the `AuthenticationSubscription` table as follows:
     ```bash
     INSERT INTO `AuthenticationSubscription` (`ueid`, `authenticationMethod`, `encPermanentKey`, `protectionParameterId`, `sequenceNumber`, `authenticationManagementField`, `algorithmId`, `encOpcKey`, `encTopcKey`, `vectorGenerationInHss`, `n5gcAuthMethod`, `rgAuthenticationInd`, `supi`) VALUES
@@ -705,3 +715,17 @@ uicc0 = {
     ```
 
 * Now restart the `5G Core` and use the new config `ue2.conf` while running the OAI UE
+
+
+
+### Wireshark Traces
+Log the wireshark traces using `tcpdump` as follows
+```bash
+sudo tcpdump -i oai-cn5g -w output.pcap
+```
+
+
+The sample shown below shows the packets being transfered during the execution of a `ping` command from the UE, and it's progress through the different components of the 5g core network, before exiting into the external data network
+
+
+![wishark-image-sample](/assets/wireshark.png)

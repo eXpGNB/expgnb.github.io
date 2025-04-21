@@ -13,7 +13,7 @@ To help you better understand, replicate, or extend this setup, here are curated
   📎 [https://gitlab.eurecom.fr/oai/openairinterface5g/-/wikis/home](https://gitlab.eurecom.fr/oai/openairinterface5g/-/wikis/home)
 
 - **Installation & Configuration Guides**  
-  📎 [https://gitlab.eurecom.fr/oai/openairinterface5g/-/wikis/5G-NR-User-Equipment-(UE)](https://gitlab.eurecom.fr/oai/openairinterface5g/-/wikis/5G-NR-User-Equipment-(UE))
+  📎 [https://gitlab.eurecom.fr/oai/openairinterface5g/-/wikis/OpenAirSoftwareSupport](https://gitlab.eurecom.fr/oai/openairinterface5g/-/wikis/OpenAirSoftwareSupport)
 
 ---
 
@@ -26,20 +26,17 @@ To help you better understand, replicate, or extend this setup, here are curated
   📎 [https://files.ettus.com/manual/page_install.html](https://files.ettus.com/manual/page_install.html)
 
 - **RF Setup Guide for OAI**  
-  📎 [https://gitlab.eurecom.fr/oai/openairinterface5g/-/wikis/5g-nr-how-to-connect-with-usrp](https://gitlab.eurecom.fr/oai/openairinterface5g/-/wikis/5g-nr-how-to-connect-with-usrp)
+  📎 [https://gitlab.eurecom.fr/oai/openairinterface5g/-/wikis/5g-nr-development-and-setup](https://gitlab.eurecom.fr/oai/openairinterface5g/-/wikis/5g-nr-development-and-setup)
 
 ---
 
 ## 🧠 Concepts & Background Reading
 
 - **5G Core Network Explained – Free 5GC Book (by 5G-ACIA)**  
-  📎 [https://www.5g-acia.org/publications/5g-core-networks/](https://www.5g-acia.org/publications/5g-core-networks/)
+  📎 [https://5g-acia.org/media/publications/](https://5g-acia.org/media/publications/)
 
 - **gNodeB and NR Architecture Overview**  
-  📎 [https://www.3gpp.org/technologies/5g-nr](https://www.3gpp.org/technologies/5g-nr)
-
-- **Packet Flow in OAI 5G (UE ↔ gNB ↔ Core)**  
-  📎 [https://gitlab.eurecom.fr/oai/openairinterface5g/-/wikis/5g-nr-architecture](https://gitlab.eurecom.fr/oai/openairinterface5g/-/wikis/5g-nr-architecture)
+  📎 [https://www.3gpp.org/technologies/5g-system-overview](https://www.3gpp.org/technologies/5g-system-overview)
 
 ---
 

@@ -21,12 +21,12 @@ cd cmake_targets/
 ### USRP Setup
 compile the gNB and nrUE for actual USRP setup (stage 2)
 ```bash
-cd ~/expgnbopenairinterface5g/
+cd ~/expgnb/openairinterface5g/
 git checkout develop
 source oaienv
 cd cmake_targets/
 rm -rf ran_build
 ./build_oai -I
-./build_oai -w --USRP --gNB --nrUE
+./build_oai -w USRP --gNB --nrUE
 ```
 
